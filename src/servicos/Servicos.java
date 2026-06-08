@@ -3,8 +3,10 @@ package servicos;
 import entities.*;
 import utils.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Array;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class Servicos implements Tarefas {
 
@@ -117,22 +119,105 @@ public class Servicos implements Tarefas {
         return armazem.getIDArmazem();
     }
 
-    public void adicionarProdutos(String id, boolean estabelecimento) {
+    public Resposta adicionarProdutosEstabelecimento(String idEstabelecimento, String idArmazem, String produto) {
+
+        Resposta resposta = new Resposta("sucesso", "");
 
         IO.println("\n=========== Adicione produtos ao estabelecimento ===========\n");
 
-        listarCategorias();
-
         try {
 
-            List<Categoria> categorias = (List<Categoria>) (GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\categorias.dat"));
+            List<ProdutoArmazem> produtosDoArmazem = (ArrayList<ProdutoArmazem>)(GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\produtosar.dat"));
+            List<ProdutoEstabelecimento> produtosDoEstabelecimento = new ArrayList<>();
+            boolean vazio = true;
+            try {
+                produtosDoEstabelecimento = (ArrayList<ProdutoEstabelecimento>) (GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\produtoses.dat"));
+                vazio = false;
+            } catch (ClassCastException e) {
+                ;
+            }
 
+            boolean existe = false;
+            String nome = produto;
+
+            if(nome.equals(" ")) {
+                nome = Validacao.validarString("Produto: ");
+            }
+
+            for(ProdutoArmazem prod : produtosDoArmazem) {
+                if(prod.getNome().equals(nome) && prod.getIdArmazem().equals(idArmazem)) {
+                    existe = true;
+                    int quantidade = Validacao.validarInt("Quantidade: ", 1, prod.getQuantidade());
+                    if(vazio) {
+                        produtosDoEstabelecimento.add(new ProdutoEstabelecimento(nome, quantidade, prod.getPreco(), prod.getPrazo(), prod.getIdCategoria(), idEstabelecimento));
+                    } else {
+                        boolean find = false;
+                        for(ProdutoEstabelecimento pr : produtosDoEstabelecimento) {
+                            if(pr.getNome().equals(nome) && pr.getIdEstabelecimento().equals(idEstabelecimento)) {
+                                find = true;
+                                produtosDoEstabelecimento.get((produtosDoEstabelecimento.indexOf(pr))).setQuantidade(pr.getQuantidade()+quantidade);
+                            }
+                        }
+                        if(!find) {
+                            produtosDoEstabelecimento.add(new ProdutoEstabelecimento(nome, quantidade, prod.getPreco(), prod.getPrazo(), prod.getIdCategoria(), idEstabelecimento));
+                        }
+                    }
+                    actualizarProdutos(nome, quantidade, false, idEstabelecimento, prod.getIdArmazem());
+                    GerenciarArquivos.escreverObjectos(produtosDoEstabelecimento, "C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\produtoses.dat");
+                    resposta.msg = "produto " + prod.getNome() + " adicionado ao estabelecimento";
+                }
+            }
+
+            if(!existe) {
+                resposta.status = "erro";
+                resposta.msg = "o produto não existe no armazém";
+                return resposta;
+            }
+
+        } catch(ClassCastException e) {
+            resposta.status = "erro";
+            resposta.msg = "nenhum produto no armazém para adicionar ao estabelecimento";
+            return resposta;
+        }
+
+        return resposta;
+    }
+
+    public void adicionarProdutosArmazem(String id) {
+        try {
+            List<Categoria> categorias = (List<Categoria>)(GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\categorias.dat"));
+            IO.println("\n\t\t================ Adicione produtos ao armazém ================\t\t\n");
+
+            IO.println("\n\t\t=========== Categorias ===========\t\t\n");
+
+            for(Categoria cat : categorias) {
+                IO.println(cat);
+            }
+
+            List<ProdutoArmazem> produtos = new ArrayList<>();
             String more = "";
-
             do {
 
-                String nome = Validacao.validarString("Produto: ");
-                int quantidade = Validacao.validarInt("Quantidade: ", 1, 100000);
+                try {
+                    produtos = (List<ProdutoArmazem>)(GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\produtosar.dat"));
+                } catch(ClassCastException e) {
+                    ;
+                }
+
+                boolean existe = false;
+                String nome = " ";
+                do {
+                    existe = false;
+                    nome = Validacao.validarString("Produto: ");
+                    for(ProdutoArmazem prod : produtos) {
+                        if(prod.getNome().equals(nome)) {
+                            IO.println("\nProduto já existe no armazém, tente novamente!\n");
+                            existe = true;
+                        }
+                    }
+                } while(existe);
+
+                int quantidade = Validacao.validarInt("Quantidade: ", 1, 1000);
                 double preco = Validacao.validarDouble("Preço: ", 0, 100000);
                 String prazo = Validacao.validarString("Prazo: ");
                 String idCategoria = null;
@@ -148,44 +233,17 @@ public class Servicos implements Tarefas {
                     }
                 } while (idCategoria == null);
 
-                if (estabelecimento) {
-                    String idEstabelecimento = id;
+                produtos.add(new ProdutoArmazem(nome, quantidade, preco, prazo, idCategoria, id));
 
-                    List<ProdutoEstabelecimento> produtos = new ArrayList<>();
+                GerenciarArquivos.escreverObjectos(produtos, "C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\produtosar.dat");
 
-                    try {
-                        produtos = (ArrayList<ProdutoEstabelecimento>) (GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\produtoses.dat"));
-                    } catch (ClassCastException e) {
-                        IO.println("\nPrimeiros produtos a serem adicionados :)\n");
-                    }
+                more = Validacao.validarString("Adicionar mais[Y/N]: ");
 
-                    produtos.add(new ProdutoEstabelecimento(nome, quantidade, preco, prazo, idCategoria, idEstabelecimento));
-                    GerenciarArquivos.escreverObjectos(produtos, "C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\produtoses.dat");
-                } else {
-                    String idArmazem = id;
-
-                    List<ProdutoArmazem> produtos = new ArrayList<>();
-
-                    try {
-                        produtos = (ArrayList<ProdutoArmazem>) (GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\produtosar.dat"));
-                    } catch (ClassCastException e) {
-                        IO.println("\nPrimeiros produtos a serem adicionados :)\n");
-                    }
-
-                    produtos.add(new ProdutoArmazem(nome, quantidade, preco, prazo, idCategoria, idArmazem));
-                    GerenciarArquivos.escreverObjectos(produtos, "C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\produtosar.dat");
-                }
-
-                more = Validacao.validarString("\nAdicionar mais [Y/N]: ");
-
-            } while (more.toLowerCase().equals("y"));
-
-            IO.println("\nProdutos adicionados com sucesso\n");
+            } while(more.toLowerCase().equals("y"));
 
         } catch(ClassCastException e) {
-            IO.println("Nenhuma categoria adicionada");
+            IO.println("\nAdicione categorias antes de adicionar produtos ao armazém!\n");
         }
-
     }
 
     public Resposta adicionarCategoria() {
@@ -217,7 +275,7 @@ public class Servicos implements Tarefas {
         return resposta;
     }
 
-    public Resposta registrarVenda(String idEstabelecimento) {
+    public Resposta registrarVenda(String idEstabelecimento, String idArmazem) {
 
         Resposta resposta = new Resposta("sucesso", "venda adicionada");
 
@@ -263,6 +321,7 @@ public class Servicos implements Tarefas {
             vendas.add(new Venda(nome, quantidade, total, idEstabelecimento));
             GerenciarArquivos.escreverObjectos(vendas, "C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\vendas.dat");
 
+            actualizarProdutos(nome, quantidade, true, idEstabelecimento, idArmazem);
 
         } catch(ClassCastException e) {
             resposta.status = "erro";
@@ -376,6 +435,63 @@ public class Servicos implements Tarefas {
                 IO.println("\nArmazém vazio vazio\n");
             }
         }
+    }
+
+    public void actualizarProdutos(String produto, int quantidade, boolean estabelecimento, String idEst, String idArm) {
+        try {
+            int idProd = 0;
+            if(estabelecimento) {
+                String adicionar = " ";
+                List<ProdutoEstabelecimento> produtos = (ArrayList<ProdutoEstabelecimento>)(GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\produtoses.dat"));
+                for(ProdutoEstabelecimento prod : produtos) {
+                    if(prod.getNome().equals(produto) && prod.getIdEstabelecimento().equals(idEst)) {
+                        prod.setQuantidade(prod.getQuantidade() - quantidade);
+                        idProd = produtos.indexOf(prod);
+                    }
+                }
+                if(produtos.get(idProd).getQuantidade() == 0) {
+                    produtos.remove(produtos.get(idProd));
+                } else if(produtos.get(idProd).getQuantidade() <= 10) {
+                    IO.println("\n\n\t\t\t"+produtos.get(idProd).getNome()+" em baixa quantidade no estabelecimento, "+produtos.get(idProd).getQuantidade()+"!\n"
+                    );
+
+                    adicionar = Validacao.validarString("\n\t\t\tAdicione o produto ao estabelecimento[Y/N]: ");
+
+                }
+                GerenciarArquivos.escreverObjectos(produtos, "C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\produtoses.dat");
+                if(adicionar.toLowerCase().equals("y")) {
+                    adicionarProdutosEstabelecimento(idEst, idArm, produtos.get(idProd).getNome());
+                }
+            } else {
+                List<ProdutoArmazem> produtos = (ArrayList<ProdutoArmazem>)(GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\produtosar.dat"));
+                for(ProdutoArmazem prod : produtos) {
+                    if(prod.getNome().equals(produto) && prod.getIdArmazem().equals(idArm)) {
+                        prod.setQuantidade(prod.getQuantidade() - quantidade);
+                        idProd = produtos.indexOf(prod);
+                    }
+                }
+                if(produtos.get(idProd).getQuantidade() == 0) {
+                    produtos.remove(produtos.get(idProd));
+                } else if(produtos.get(idProd).getQuantidade() <= 20) {
+                    IO.println("\n\t\t\t"+produtos.get(idProd).getNome()+" em baixa quantidade no armazém, "+produtos.get(idProd).getQuantidade()+"!\n"
+                    );
+                }
+                GerenciarArquivos.escreverObjectos(produtos, "C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\produtosar.dat");
+            }
+        } catch(ClassCastException e) {
+              ;
+        }
+    }
+
+    public void dadosDoEstabelecimento(Gerente gerente) {
+        Estabelecimento estabelecimento = ((ArrayList<Estabelecimento>)(GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\estabelecimentos.dat"))).stream().filter(est -> est.getIdEstabelecimento().equals(gerente.getIdEstabelecimento())).toList().getFirst();
+        Armazem armazem = ((ArrayList<Armazem>)(GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\armazens.dat"))).stream().filter(ar -> ar.getIdEstabelecimento().equals(gerente.getIdEstabelecimento())).toList().getFirst();
+
+        IO.println("\n\t\t\t================= Dados do estabelecimento =================\n");
+        IO.print(estabelecimento);
+        IO.println("Localização do armazém: "+armazem.getLocalizacao());
+        IO.print(gerente);
+
     }
 
 }

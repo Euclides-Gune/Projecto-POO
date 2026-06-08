@@ -58,6 +58,6 @@ public class Gerente implements Serializable {
     @Override
     public boolean equals(Object obj) {
         Gerente outro = (Gerente) (obj);
-        return this.nome.equals(outro.nome) && this.password.equals(outro.password);
+        return this.nome.toLowerCase().equals(outro.nome.toLowerCase()) && this.password.toLowerCase().equals(outro.password.toLowerCase());
     }
 }

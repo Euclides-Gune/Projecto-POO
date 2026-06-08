@@ -60,10 +60,11 @@ public class Menu {
                             "6. Adicionar produtos ao armazém\n"+
                             "7. Adicionar categoria\n"+
                             "8. Registrar venda\n"+
-                            "9. Sair\n"
+                            "9. Dados do estabelecimento\n"+
+                            "10. Sair\n"
             );
 
-            opc = Validacao.validarInt("Escolha: ", 1, 9);
+            opc = Validacao.validarInt("Escolha: ", 1, 10);
 
             switch (opc) {
                 case 1:
@@ -79,23 +80,26 @@ public class Menu {
                     servicos.listarVendas(gerente.getIdEstabelecimento());
                     break;
                 case 5:
-                    servicos.adicionarProdutos(gerente.getIdEstabelecimento(), true);
+                    IO.println(servicos.adicionarProdutosEstabelecimento(gerente.getIdEstabelecimento(), gerente.getIdArmazem(), " "));
                     break;
                 case 6:
-                    servicos.adicionarProdutos(gerente.getIdArmazem(), false);
+                    servicos.adicionarProdutosArmazem(gerente.getIdArmazem());
                     break;
                 case 7:
                     servicos.adicionarCategoria();
                     break;
                 case 8:
-                    IO.println(servicos.registrarVenda(gerente.getIdEstabelecimento()));
+                    IO.println(servicos.registrarVenda(gerente.getIdEstabelecimento(), gerente.getIdArmazem()));
                     break;
                 case 9:
-                    IO.println("Bye");
+                    servicos.dadosDoEstabelecimento(gerente);
+                    break;
+                case 10:
+                    IO.println("\n\t\t\t AU REVOIR");
                     break;
             }
 
-        } while(opc != 9);
+        } while(opc != 10);
 
     }
 

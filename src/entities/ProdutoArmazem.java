@@ -14,6 +14,10 @@ public class ProdutoArmazem extends Produto implements Serializable {
         return idArmazem;
     }
 
+//    public void setQuantidade(int quantidade) {
+//        this.quantidade = quantidade;
+//    }
+
     @Override
     public String toString() {
         return

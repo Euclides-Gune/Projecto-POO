@@ -44,6 +44,10 @@ public abstract class Produto implements Serializable {
         return quantidade;
     }
 
+    public void setQuantidade(int quant) {
+        this.quantidade = quant;
+    }
+
     @Override
     public String toString() {
         return

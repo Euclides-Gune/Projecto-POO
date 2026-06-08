@@ -43,6 +43,6 @@ public class Estabelecimento implements Serializable {
     @Override
     public boolean equals(Object obj) {
         Estabelecimento outro = (Estabelecimento) (obj);
-        return this.nome.equals(outro.nome) && this.localizacao.equals(outro.localizacao) && this.contacto.equals(outro.contacto);
+        return this.nome.toLowerCase().equals(outro.nome.toLowerCase()) && this.localizacao.equals(outro.localizacao) && this.contacto.equals(outro.contacto);
     }
 }
