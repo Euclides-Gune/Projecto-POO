@@ -33,7 +33,7 @@ public class Menu {
                         menu2(gerente);
                         opc = 3;
                     } else {
-                        IO.println("\nDados inválidos!\n");
+                        IO.println("\nNome ou senha inválida!\n");
                     }
                     break;
                 case 3:

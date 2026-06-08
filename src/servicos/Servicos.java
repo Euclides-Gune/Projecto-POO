@@ -277,13 +277,10 @@ public class Servicos implements Tarefas {
         String nome = Validacao.validarString("Nome do gerente: ");
         String password = Validacao.validarSenha("Senha do gerente: ", 6);
 
-        List<Estabelecimento> estabelecimentos = new ArrayList<>();
-        List<Gerente> gerentes = new ArrayList<>();
-
         try {
 
-            estabelecimentos = (ArrayList<Estabelecimento>) (GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\estabelecimentos.dat"));
-            gerentes = (ArrayList<Gerente>) (GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\gerentes.dat"));
+            List<Estabelecimento> estabelecimentos = (ArrayList<Estabelecimento>) (GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\estabelecimentos.dat"));
+            List<Gerente> gerentes = (ArrayList<Gerente>) (GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\gerentes.dat"));
 
             String idEstabelecimento = null;
 

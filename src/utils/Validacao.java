@@ -14,10 +14,10 @@ public class Validacao {
         try {
             do {
                 resposta = br.readLine();
-                if(resposta.isEmpty()) {
+                if(resposta.isEmpty() || soEspacos(resposta)) {
                     IO.print("Entrada inválida, não pode estar vazia!\n Introduza novamente: ");
                 }
-            } while(resposta.isEmpty());
+            } while(resposta.isEmpty() || soEspacos(resposta));
         } catch(IOException e) {
             IO.println(e.getMessage());
         }
@@ -31,9 +31,9 @@ public class Validacao {
         try {
             do {
                 senha = br.readLine();
-                if(senha.isEmpty() && senha.length() < length)
-                    IO.print("Inválido!\nSenha deve conter letras, caracteres e ter tamanho maior que "+length+"!Digite novamente: \n");
-            } while(senha.isEmpty() && senha.length() < length);
+                if(senha.isEmpty() || senha.length() < length || soEspacos(senha))
+                    IO.print("\nSenha inválida,  deve ter tamanho maior que "+length+"!\nDigite novamente: \n");
+            } while(senha.isEmpty() || senha.length() < length || soEspacos(senha));
         } catch(IOException e) {
             IO.println(e.getMessage());
         }
@@ -75,6 +75,16 @@ public class Validacao {
             IO.println("A entrada deve ser um valor numério!");
         }
         return resposta;
+    }
+
+    public static boolean soEspacos(String str) {
+        int l = 0;
+        for(int i = 0; i < str.length(); i++) {
+            if(str.charAt(i) == ' ') {
+                l++;
+            }
+        }
+        return l == str.length();
     }
 
 }
