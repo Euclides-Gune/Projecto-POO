@@ -4,8 +4,11 @@ import entities.*;
 import utils.*;
 
 import java.lang.reflect.Array;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class Servicos implements Tarefas {
@@ -219,7 +222,35 @@ public class Servicos implements Tarefas {
 
                 int quantidade = Validacao.validarInt("Quantidade: ", 1, 1000);
                 double preco = Validacao.validarDouble("Preço: ", 0, 100000);
-                String prazo = Validacao.validarString("Prazo: ");
+                IO.println("Prazo: ");
+                String prazo = "";
+
+                try {
+                    do {
+                        int dia = Validacao.validarInt("Dia: ", 1, 31);
+                        int mes = Validacao.validarInt("Mês: ", 1, 12);
+                        int ano = Validacao.validarInt("Ano: ", 2026, 2040);
+
+                        if(dia < 10 && mes < 10) {
+                            prazo = "0"+dia + "/0" + mes + "/" + ano;
+                        } else if(mes < 10) {
+                            prazo = dia + "/0" + mes + "/" + ano;
+                        } else if (dia < 10) {
+                            prazo = "0"+dia + "/" + mes + "/" + ano;
+                        } else {
+                            prazo = dia + "/" + mes + "/" + ano;
+                        }
+
+                        if(ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.parse(prazo, DateTimeFormatter.ofPattern("dd/MM/yyyy"))) < 10) {
+                            IO.println("\nO prazo de validade do produto deve ser 10 dias maior que a data actual, digite novamente!\n");
+                        }
+
+                    } while (ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.parse(prazo, DateTimeFormatter.ofPattern("dd/MM/yyyy"))) < 10);
+                } catch(DateTimeParseException e) {
+                    IO.println("\nData inválida!\n");
+                    return;
+                }
+
                 String idCategoria = null;
                 do {
                     String categoria = Validacao.validarString("Categoria: ");
@@ -491,6 +522,46 @@ public class Servicos implements Tarefas {
         IO.print(estabelecimento);
         IO.println("Localização do armazém: "+armazem.getLocalizacao());
         IO.print(gerente);
+
+    }
+
+    public void checkUp(String idEstabelecimento, String idArmazem) {
+
+        try {
+
+            List<ProdutoEstabelecimento> produtosDoEstabelecimento = (List<ProdutoEstabelecimento>)(GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\produtoses.dat"));
+            produtosDoEstabelecimento = produtosDoEstabelecimento.stream().filter(prod -> prod.getIdEstabelecimento().equals(idEstabelecimento)).toList();
+
+            List<ProdutoArmazem> produtos = (List<ProdutoArmazem>)(GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\produtosar.dat"));
+            produtos = produtos.stream().filter(prod -> prod.getIdArmazem().equals(idArmazem)).toList();
+
+            int primeiro = 0;
+
+            for(ProdutoArmazem prod : produtos) {
+                if(ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.parse(prod.getPrazo(), DateTimeFormatter.ofPattern("dd/MM/yyyy"))) < 60) {
+                    if(primeiro == 0) {
+                        IO.println("\n\t\t=============== Produtos do armazém a 60 dias de expirar prazo ===============\n\n");
+                        primeiro = 1;
+                    }
+                    IO.println(prod);
+                }
+            }
+
+            primeiro = 0;
+
+            for(ProdutoEstabelecimento prod : produtosDoEstabelecimento) {
+                if(ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.parse(prod.getPrazo(), DateTimeFormatter.ofPattern("dd/MM/yyyy"))) < 60) {
+                    if(primeiro == 0) {
+                        IO.println("\n\t\t=============== Produtos do estabelecimento a 60 dias de expirar prazo ===============\n\n");
+                        primeiro = 1;
+                    }
+                    IO.println(prod);
+                }
+            }
+
+        } catch(ClassCastException | DateTimeParseException e) {
+            ;
+        }
 
     }
 

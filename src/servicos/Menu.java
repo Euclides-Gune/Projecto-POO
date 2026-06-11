@@ -48,6 +48,8 @@ public class Menu {
 
         int opc = 0;
 
+        servicos.checkUp(gerente.getIdEstabelecimento(), gerente.getIdArmazem());
+
         do {
 
             IO.print(
