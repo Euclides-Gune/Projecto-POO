@@ -564,5 +564,19 @@ public class Servicos implements Tarefas {
         }
 
     }
+@Override
+        public void limparTela() {
+    try {
+        String os = System.getProperty("os.name").toLowerCase();
+        
+        if (os.contains("win")) {
+            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+        } else {
+            new ProcessBuilder("clear").inheritIO().start().waitFor();
+        }
+    } catch (IOException | InterruptedException e) {
+        System.out.println("Erro ao tentar limpar a tela: " + e.getMessage());
+    }
+}
 
 }
