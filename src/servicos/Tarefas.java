@@ -16,6 +16,7 @@ public interface Tarefas {
     public void listarCategorias();
     public void listarVendas(String idEstabelecimento);
     public void listarProdutos(String id, boolean estabelecimento);
+    public void checkUp(String idEstabelecimento, String idArmazem);
     public void limparTela();
     
 }
