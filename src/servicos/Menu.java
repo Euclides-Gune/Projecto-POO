@@ -20,7 +20,7 @@ public class Menu {
             );
 
             opc = Validacao.validarInt("Escolha: ", 1, 3);
-
+            servicos.limparTela();
             switch (opc) {
                 case 1:
                     IO.println(servicos.adicionarEstabelecimento());
