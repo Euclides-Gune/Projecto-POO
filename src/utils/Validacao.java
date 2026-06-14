@@ -72,7 +72,7 @@ public class Validacao {
         } catch(IOException e) {
             IO.println(e.getMessage());
         } catch(NumberFormatException e) {
-            IO.println("A entrada deve ser um valor numério!");
+            IO.println("A entrada deve ser um valor numérico!");
         }
         return resposta;
     }
