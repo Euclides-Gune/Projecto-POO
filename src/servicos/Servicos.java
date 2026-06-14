@@ -13,6 +13,7 @@ import java.util.*;
 
 public class Servicos implements Tarefas {
 
+    @Override
     public Resposta adicionarEstabelecimento() {
 
         Resposta resposta = new Resposta("sucesso", "estabelecimento adicionado com sucesso");
@@ -49,6 +50,7 @@ public class Servicos implements Tarefas {
         return resposta;
     }
 
+    @Override
     public void adicionarGerente(String idEstabelecimento, String idArmazem) {
 
         /*
@@ -101,6 +103,7 @@ public class Servicos implements Tarefas {
         GerenciarArquivos.escreverObjectos(gerentes, "C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\gerentes.dat");
     }
 
+    @Override
     public String adicionarArmazem(String idEstabelecimento) {
 
         String localizacao = Validacao.validarString("localização do armazém: ");
@@ -122,6 +125,7 @@ public class Servicos implements Tarefas {
         return armazem.getIDArmazem();
     }
 
+    @Override
     public Resposta adicionarProdutosEstabelecimento(String idEstabelecimento, String idArmazem, String produto) {
 
         Resposta resposta = new Resposta("sucesso", "");
@@ -186,6 +190,7 @@ public class Servicos implements Tarefas {
         return resposta;
     }
 
+    @Override
     public void adicionarProdutosArmazem(String id) {
         try {
             List<Categoria> categorias = (List<Categoria>)(GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\categorias.dat"));
@@ -277,6 +282,7 @@ public class Servicos implements Tarefas {
         }
     }
 
+    @Override
     public Resposta adicionarCategoria() {
 
         Resposta resposta = new Resposta("sucesso", "categoria adicionada");
@@ -362,6 +368,7 @@ public class Servicos implements Tarefas {
 
     }
 
+    @Override
     public Gerente getDados() {
         String nomeEstabelecimento = Validacao.validarString("Nome do estabelecimento: ");
         String nome = Validacao.validarString("Nome do gerente: ");
@@ -394,6 +401,7 @@ public class Servicos implements Tarefas {
         return null;
     }
 
+    @Override
     public void listarCategorias() {
         try {
             List<Categoria> categorias = (List<Categoria>)(GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\categorias.dat"));
@@ -406,6 +414,7 @@ public class Servicos implements Tarefas {
         }
     }
 
+    @Override
     public void listarVendas(String idEstabelecimento) {
         try {
             List<Venda> vendas = (List<Venda>)(GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\vendas.dat"));
@@ -429,6 +438,7 @@ public class Servicos implements Tarefas {
 
     }
 
+    @Override
     public void listarProdutos(String id, boolean estabelecimento) {
         if(estabelecimento) {
             try {
@@ -468,6 +478,7 @@ public class Servicos implements Tarefas {
         }
     }
 
+    @Override
     public void actualizarProdutos(String produto, int quantidade, boolean estabelecimento, String idEst, String idArm) {
         try {
             int idProd = 0;
@@ -514,6 +525,7 @@ public class Servicos implements Tarefas {
         }
     }
 
+    @Override
     public void dadosDoEstabelecimento(Gerente gerente) {
         Estabelecimento estabelecimento = ((ArrayList<Estabelecimento>)(GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\estabelecimentos.dat"))).stream().filter(est -> est.getIdEstabelecimento().equals(gerente.getIdEstabelecimento())).toList().getFirst();
         Armazem armazem = ((ArrayList<Armazem>)(GerenciarArquivos.lerObjectos("C:\\Users\\eucli\\OneDrive\\Documentos\\Projecto\\src\\files\\armazens.dat"))).stream().filter(ar -> ar.getIdEstabelecimento().equals(gerente.getIdEstabelecimento())).toList().getFirst();
@@ -525,6 +537,7 @@ public class Servicos implements Tarefas {
 
     }
 
+    @Override
     public void checkUp(String idEstabelecimento, String idArmazem) {
 
         try {
